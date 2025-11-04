@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Sharing/Saving Website</title>
+<style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            text-align: center;
+            transition: background 0.5s ease;
+
+        }
+        #container {
+            width: 80%;
+            max-width: 600px;
+            transition: background 0.5s ease;
+            position: fixed;
+            align-items: middle;
+            top: 25%;
+        }
+        #textContainer {
+            width: 80%;
+            max-width: 1000px;
+            transition: background 0.5s ease;
+            align-items: middle;
+            top: 10%;
+        }
+        #textContainer textarea {
+            width: 100%;
+            height: 90%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: 2px solid white;
+            resize: none;
+            font-size: 1em;
+            max-height: 400px;
+            scrollbar-width: none;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            transition: background 0.5s ease;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            transition: background 0.5s ease;
+        }
+        #searchBox {
+            display: flex;
+            align-items: center;
+            border: 2px solid white;
+            border-radius: 25px;
+            padding: 10px;
+            background-color: #333;
+            transition: background 0.5s ease;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            color: white;
+            font-size: 1em;
+            transition: background 0.5s ease;
+        }
+        #searchButton {
+            background: url('https://img.icons8.com/ios-filled/50/ffffff/search--v1.png') no-repeat center;
+            background-size: 20px 20px;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            transition: background 0.5s ease;
+        }
+</style>
+
+<style>
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555; 
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: -420%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #555 transparent;
+}
+/* Toggle this class - hide and show the popup */
+.popup .ishow { visibility: visible; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity:1 ;} }
+</style>
+
+<style>
+                #share {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 10px;
+            background: linear-gradient(
+                270deg,
+                white 0%,
+                white 46%,
+                black 48%,
+                black 100%
+            );
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.5s ease;
+        }
+        
+        #a { color: white; }
+        #b { color: black; }
+</style>
+
+<style>
+        body.light-mode #a { color: black; }
+        body.light-mode #b { color: white; }
+</style>
+
+<style>
+        body.light-mode {
+            background-color: #eee;
+        }
+
+        body.light-mode textarea {
+            background-color: #eee;
+            color: #111;
+            border-color: black;
+        }
+
+        body.light-mode {
+            background-color: #eee;
+            color: black;
+        }
+        body.light-mode #searchBox {
+            background-color: #ddd;
+            border-color: black;
+        }
+        body.light-mode #searchInput {
+            color: black;
+        }
+        body.light-mode #searchButton {
+        filter: invert(100%);
+        }
+        body.light-mode #textContainer textarea {
+            background-color: #ddd;
+            color: black;
+            border-color: black;
+        }
+</style>
+
+<style>
+.ipopup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.ipopup .ipopuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555; 
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: -420%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.ipopup .ipopuptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #555 transparent;
+}
+/* Toggle this class - hide and show the popup */
+.ipopup .ishow { visibility: visible; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity:1 ;} }
+</style>
+
+</head>
+<body>
+    <div id="container">
+        <h1>Welcome to the Text Sharing Website</h1>
+        <p>Search for or share text by entering a key below. Click the search icon or press Enter to continue.</p>
+        
+        <div id="searchBox">
+            <input type="text" id="searchInput" placeholder="Enter text key..." />
+            <button id="searchButton" aria-label="Search"></button>
+        </div>
+    </div>
+
+    <div id="textContainer" onload="load()" style="display: none;">
+        <h1>Text Sharing for Key: <span id="currentKey"></span></h1>
+        <span id="char"></span><span> </span><div class="ipopup" onclick="ipopup()"><img style="position: relative; bottom: -2px; height: 12px; border: solid 1px black; border-radius: 100%; background: white; image-rendering: pixelated;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAACBJREFUGFdjZMADGNHk/jMwMMDF0CVR1JKkE6+xxNsJAHb2BAgUq55HAAAAAElFTkSuQmCC">
+  <span class="ipopuptext" id="myPopup">Info<br>More<br>info</span>
+</div>
+        <textarea id="textContent" placeholder="Start typing..." oninput="
+            document.getElementById('char').innerHTML=this.value.length+(this.value.length==1?' Character':' Characters');
+            num2sup(this);
+    "></textarea>
+    </div>
+
+    <button id="share"><i id="a" style="font-style:normal;">Mo</i><i id="b" style="font-style:normal;">de</i></button>
+
+    <script>
+        function ipopup() {
+            var popup = document.getElementById("myPopup");
+            popup.classList.toggle("ishow");
+        }
+    </script>
+
+    <script>
+    
+        z2n=['⁰','¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹']
+    
+        function num2sup(that){
+            car=that.selectionStart;
+            txt=that.value
+            newTxt=that.value=that.value.replace(/(\^\d)/gm,(b)=>z2n[+b.charAt(1)]);
+            that.focus();
+            newCar=txt==newTxt?car:car-1;
+            that.setSelectionRange(newCar,newCar);
+            /*
+            document.querySelector('p').innerHTML=
+            that.value.match(/(\^\d)/gm).map(b=>z2n[+b.charAt(1)])
+            */
+        };
+
+    </script>
+
+    <script>
+function load(){document.getElementById('char').innerHTML=document.getElementById('textContent').value.length+(document.getElementById('textContent').value.length==1?' Character':' Characters');}
+    load();
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: process.env.API_KEY,
+            authDomain: process.env.AUTH_DOMAIN,
+            databaseURL: process.env.DATABASE_URL,
+            projectId: "ivanprocookie-dfaf4",
+            storageBucket: process.env.STORAGE_BUCKET,
+            messagingSenderId: process.env.MESSAGING_SENDER_ID,
+            appId: process.env.APP_ID,
+            measurementId: process.env.MEASUREMENT_ID
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Determine key from URL or default to 'text'
+        const urlParams = new URLSearchParams(window.location.search);
+        const key = urlParams.get('key') || 'default';
+        const dataRef = ref(database, `text/${key}`);
+
+        const textContent = document.getElementById('textContent');
+        const currentKeyDisplay = document.getElementById('currentKey');
+
+        if (urlParams.has('key')) {
+            document.getElementById('container').style.display = 'none';
+            document.getElementById('textContainer').style.display = 'block';
+            currentKeyDisplay.textContent = key;
+
+            // Load initial text from Firebase
+            onValue(dataRef, (snapshot) => {
+                const data = snapshot.val();
+                textContent.value = data || '';
+            });
+
+            // Save text to Firebase on input
+            textContent.addEventListener('input', function () {
+                set(dataRef, textContent.value)
+                    .then(() => console.log(`Data updated for key: ${key}`))
+                    .catch((error) => console.error('Error updating data:', error));
+            });
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const query = event.target.value.trim();
+                if (query) {
+                    window.location.href = `?key=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                window.location.href = `?key=${encodeURIComponent(query)}`;
+            }
+        });
+
+        const onload=setTimeout(load, 1000);
+    </script>
+
+    <script>
+        const modeButton = document.getElementById("share");
+        const body = document.body;
+
+        // Initialize the current angle and gradient stops
+        let currentAngle = 270;
+        const step = 9; // Increased step size to rotate faster
+        const totalRotation = 180; // Total degrees to rotate
+        const intervalTime = 10; // Lower time interval for faster animation
+        let isRotating = false;
+        let gradientStop = 47; // Default gradient stop for normal mode
+
+        function rotateGradient(targetAngle, stopPercentage) {
+            if (isRotating) return; // Prevent multiple intervals
+            isRotating = true;
+            let intervalId = setInterval(() => {
+                if ((targetAngle > currentAngle && currentAngle < targetAngle) ||
+                    (targetAngle < currentAngle && currentAngle > targetAngle)) {
+                    currentAngle += (targetAngle > currentAngle ? step : -step);
+                    modeButton.style.background = `linear-gradient(${currentAngle}deg, white 0%, white ${stopPercentage}%, black ${stopPercentage}%, black 100%)`;
+                } else {
+                    clearInterval(intervalId);
+                    isRotating = false;
+                }
+            }, intervalTime);
+        }
+
+        modeButton.addEventListener("click", function () {
+            body.classList.toggle("light-mode");
+            if (body.classList.contains('light-mode')) {
+                rotateGradient(90, 53); // Rotate to 90 degrees with 48% stop in light mode
+            } else {
+                rotateGradient(270, 47); // Rotate back to 270 degrees with 52% stop in normal mode
+            }
+        });
+      /*
+      if (window.location.href.indexOf("?cc") > -1){window.open("https://ivanprocookie.github.io/text/db", "_self")}
+      if (window.location.href.indexOf("?db") > -1){window.open("https://ivanprocookie.github.io/text/db", "_self")}
+      */
+    </script>
+</body>
+</html>
