@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Url Text Sharing/Saving Website</title>
+    <style>
+        body {
+            background-color: #111;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            transition: background-color 0.5s;
+        }
+        textarea {
+            background-color: #111;
+            color: #eee;
+            border-color: white;
+            width: 100%;
+            height: 550px;
+            transition: background-color 0.5s;
+        }
+        #share {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 10px;
+            background: linear-gradient(
+                270deg,
+                white 0%,
+                white 46%,
+                black 48%,
+                black 100%
+            );
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.5s ease;
+        }
+
+        p {
+          color: white;
+        }
+        
+        #a { color: white; }
+        #b { color: black; }
+        </style>
+        <style>
+        body.light-mode {
+            background-color: #eee;
+        }
+
+        body.light-mode textarea {
+            background-color: #eee;
+            color: #111;
+            border-color: black;
+        }
+
+        body.light-moe p {
+          color: black;
+        }
+
+        body.light-mode #a { color: black; }
+        body.light-mode #b { color: white; }
+    </style>
+</head>
+<body>
+    <textarea id="text" oninput="
+      document.querySelector('p').innerHTML=document.querySelector('textarea').value.length+' Characters';
+
+    "></textarea>
+    <button id="share"><i id="a" style="font-style:normal;">Mo</i><i id="b" style="font-style:normal;">de</i></button>
+    <p></p>
+
+<!--
+    <script>document.querySelector('p').innerHTML=document.querySelector('textarea').length+' Characters'</script>
+-->
+
+    <script>
+        document.addEventListener('keydown', function(event){
+            if(event.key=='Tab'){
+                if(document.activeElement.id=='text'){
+                    event.preventDefault();
+                    tabCar = document.activeElement.selectionStart;
+                    document.activeElement.value = document.activeElement.value.slice(0, tabCar)+'	'+document.activeElement.value.slice(tabCar);
+                    document.activeElement.setSelectionRange(tabCar+1,tabCar+1);
+                    updateText();
+        }}});
+
+        /*
+        document.addEventListener('keydown', function(event){
+            if(event.key=='Tab'){
+                if(document.activeElement.id=='text'){
+                    event.preventDefault();
+                    document.getElementById('text').value+='	'
+                    updateText();
+        }}});
+        */
+    </script>
+
+    <script>
+        const modeButton = document.getElementById("share");
+        const body = document.body;
+
+        // Initialize the current angle and gradient stops
+        let currentAngle = 270;
+        const step = 9; // Increased step size to rotate faster
+        const totalRotation = 180; // Total degrees to rotate
+        const intervalTime = 10; // Lower time interval for faster animation
+        let isRotating = false;
+        let gradientStop = 47; // Default gradient stop for normal mode
+
+        function rotateGradient(targetAngle, stopPercentage) {
+            if (isRotating) return; // Prevent multiple intervals
+            isRotating = true;
+            let intervalId = setInterval(() => {
+                if ((targetAngle > currentAngle && currentAngle < targetAngle) ||
+                    (targetAngle < currentAngle && currentAngle > targetAngle)) {
+                    currentAngle += (targetAngle > currentAngle ? step : -step);
+                    modeButton.style.background = `linear-gradient(${currentAngle}deg, white 0%, white ${stopPercentage}%, black ${stopPercentage}%, black 100%)`;
+                } else {
+                    clearInterval(intervalId);
+                    isRotating = false;
+                }
+            }, intervalTime);
+        }
+
+        modeButton.addEventListener("click", function () {
+            body.classList.toggle("light-mode");
+            if (body.classList.contains('light-mode')) {
+                rotateGradient(90, 53); // Rotate to 90 degrees with 48% stop in light mode
+            } else {
+                rotateGradient(270, 47); // Rotate back to 270 degrees with 52% stop in normal mode
+            }
+        });
+    </script>
+
+    <script>
+        const url = new URLSearchParams(window.location.search);
+        const text = document.getElementById('text');
+
+        // Check if 'text' parameter exists in the URL
+        if (url.has('text')) {
+            const urlText = url.get('text');
+            text.value = urlText;
+        }
+
+        function updateText(){
+            const newText = text.value;
+            history.replaceState({}, '', `?text=${encodeURIComponent(newText)}`);
+        };
+
+        // Update the URL when the text is changed
+        text.addEventListener('input', () => {
+            updateText();
+        });
+    </script>
+</body>
+</html>
