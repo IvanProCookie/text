@@ -291,69 +291,77 @@ function load(){document.getElementById('char').innerHTML=document.getElementByI
     load();
     </script>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: process.env.API_KEY,
-            authDomain: process.env.AUTH_DOMAIN,
-            databaseURL: process.env.DATABASE_URL,
-            projectId: "ivanprocookie-dfaf4",
-            storageBucket: process.env.STORAGE_BUCKET,
-            messagingSenderId: process.env.MESSAGING_SENDER_ID,
-            appId: process.env.APP_ID,
-            measurementId: process.env.MEASUREMENT_ID
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // Determine key from URL or default to 'text'
-        const urlParams = new URLSearchParams(window.location.search);
-        const key = urlParams.get('key') || 'default';
-        const dataRef = ref(database, `text/${key}`);
-
-        const textContent = document.getElementById('textContent');
-        const currentKeyDisplay = document.getElementById('currentKey');
-
-        if (urlParams.has('key')) {
-            document.getElementById('container').style.display = 'none';
-            document.getElementById('textContainer').style.display = 'block';
-            currentKeyDisplay.textContent = key;
-
-            // Load initial text from Firebase
-            onValue(dataRef, (snapshot) => {
-                const data = snapshot.val();
-                textContent.value = data || '';
-            });
-
-            // Save text to Firebase on input
-            textContent.addEventListener('input', function () {
-                set(dataRef, textContent.value)
-                    .then(() => console.log(`Data updated for key: ${key}`))
-                    .catch((error) => console.error('Error updating data:', error));
-            });
-        }
-
-        // Event listeners
-        document.getElementById('searchInput').addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                const query = event.target.value.trim();
-                if (query) {
-                    window.location.href = `?key=${encodeURIComponent(query)}`;
-                }
-            }
-        });
-
-        document.getElementById('searchButton').addEventListener('click', () => {
+    <script>
+        // Search/navigation functionality - outside module to ensure it works
+        // even if Firebase fails to load
+        function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (query) {
                 window.location.href = `?key=${encodeURIComponent(query)}`;
             }
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
         });
 
-        const onload=setTimeout(load, 1000);
+        document.getElementById('searchButton').addEventListener('click', performSearch);
+
+        // Check URL and show/hide appropriate containers
+        const urlParams = new URLSearchParams(window.location.search);
+        const key = urlParams.get('key') || 'default';
+
+        if (urlParams.has('key')) {
+            document.getElementById('container').style.display = 'none';
+            document.getElementById('textContainer').style.display = 'block';
+            document.getElementById('currentKey').textContent = key;
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        // Fetch Firebase configuration from serverless function
+        async function initFirebase() {
+            try {
+                const response = await fetch('/.netlify/functions/config');
+                const firebaseConfig = await response.json();
+
+                const app = initializeApp(firebaseConfig);
+                const database = getDatabase(app);
+
+                // Determine key from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const key = urlParams.get('key') || 'default';
+                const dataRef = ref(database, `text/${key}`);
+
+                const textContent = document.getElementById('textContent');
+
+                if (urlParams.has('key')) {
+                    // Load initial text from Firebase
+                    onValue(dataRef, (snapshot) => {
+                        const data = snapshot.val();
+                        textContent.value = data || '';
+                        load(); // Update character count
+                    });
+
+                    // Save text to Firebase on input
+                    textContent.addEventListener('input', function () {
+                        set(dataRef, textContent.value)
+                            .then(() => console.log(`Data updated for key: ${key}`))
+                            .catch((error) => console.error('Error updating data:', error));
+                    });
+                }
+            } catch (error) {
+                console.error('Firebase initialization failed:', error);
+            }
+        }
+
+        initFirebase();
+        setTimeout(load, 1000);
     </script>
 
     <script>
